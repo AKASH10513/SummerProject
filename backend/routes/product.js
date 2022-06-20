@@ -2,40 +2,44 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
-const {search,filter} = require('../Search/queryFilterAndPagination');
+const {search,filter,pagination} = require('../Search/queryFilterAndPagination');
+const {requireLogin,admin} = require('../middleware/requireLoginRole');
 
-router.route("/products").get((req,res,next) => {
+router.route("/products").get(requireLogin,(req,res,next) => {
     const s = search(req.query.search);
     const f = filter(req.query);
     const newQuery = {...s,...f};
+    const skip = pagination(this.query);
     // console.log(newQuery);
-    Product.find(newQuery).then((product) => res.status(200).json({product})).catch((err) => {
+    Product.find(newQuery).limit(process.env.ITEMS).skip(skip).then((product) => res.status(200).json({product})).catch((err) => {
         return res.status(404).json({error:"Products not found"});
     });
 });
 
-router.route("/product/:id").get((req,res,next) => {
+router.route("/product/:id").get(requireLogin,async(req,res,next) => {
     const id = req.params.id;
-    Product.findById(id).then((product) => res.status(200).json({product})).catch((err) => {
+    const NumberOfProducts = await Product.countDocuments();
+    Product.findById(id).then((product) => res.status(200).json({product,NumberOfProducts})).catch((err) => {
         return res.status(404).json({error:"product not available"});
     });
 });
 
 
-router.route("/product/newProduct").post(async (req,res,next) => {
+router.route("/product/newProduct").post(requireLogin,admin("user"),async (req,res,next) => {
+    req.body.user = req.user.id;
     await Product.create(req.body, function (err, product) {
         if(err){
             return res.status(404).json("Unsuccessfull in creating the new product");
         }
         product.save().then(result => {
-            res.json({product:result});
+            return res.json({product:result});
         }).
         catch(err => {res.status(500).json("Internal Server Error")});
-        return res.status(201).json({success : true,product});
+        return res.status(200).json({success : true,product});
     });
 });
 
-router.route("/product/:id").put(async (req,res,next) => {
+router.route("/product/:id").put(requireLogin,admin("user"),async (req,res,next) => {
     const id = req.params.id;
     await Product.findById(id, function(err,product){
         if(err){
@@ -47,7 +51,7 @@ router.route("/product/:id").put(async (req,res,next) => {
     });
 });
 
-router.route("/product/deleteProduct/:id").delete(async (req,res,next) => {
+router.route("/product/deleteProduct/:id").delete(requireLogin,admin("user"),async (req,res,next) => {
     const id = req.params.id;
     await Product.findById(id, function(err,product){
         if(err){

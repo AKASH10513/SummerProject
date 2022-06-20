@@ -15,7 +15,14 @@ function filter (query){
     return JSON.parse(qstr);
 }
 
+function pagination(query){
+    const currpage = query ? (query.limit ? query.limit: 1) : 1;
+    const skip = process.env.ITEMS*(currpage - 1);
+    return skip;
+}
+
 module.exports = {
     search,
-    filter
+    filter,
+    pagination
 };
