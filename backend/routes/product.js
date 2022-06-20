@@ -34,8 +34,7 @@ router.route("/product/newProduct").post(requireLogin,admin("user"),async (req,r
         product.save().then(result => {
             return res.json({product:result});
         }).
-        catch(err => {res.status(500).json("Internal Server Error")});
-        return res.status(200).json({success : true,product});
+        catch(err => { return res.status(500).json("Internal Server Error")});
     });
 });
 
