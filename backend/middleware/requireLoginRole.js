@@ -23,6 +23,7 @@ function requireLogin(req,res,next) {
 }
 function admin(...role_user){
     return (req,res,next) => {
+        // console.log(req.user);
         if(role_user.includes(req.user.role)){
             return res.status(403).json({error:"Only admin are allowed to access the resource"});
         }
