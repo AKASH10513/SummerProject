@@ -12,6 +12,8 @@ require('./models/Product');
 const app = express();
 dotenv.config({path: "backend/config/.env"});
 
+
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json());

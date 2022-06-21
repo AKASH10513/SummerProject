@@ -34,18 +34,18 @@ router.post("/product/newProduct",requireLogin,admin("user"),async (req,res,next
         product.save().then(result => {
             return res.json({product:result});
         }).
-        catch(err => {res.status(500).json("Internal Server Error")});
-        return res.status(200).json({success : true,product});
+        catch(err => { return res.status(500).json("Internal Server Error")});
     });
 });
 
-router.route("/product/:id").put(requireLogin,admin("user"),async (req,res,next) => {
+router.route("/product/:id").put(requireLogin,async (req,res,next) => {
     const id = req.params.id;
     await Product.findByIdAndUpdate(id,req.body,{new: true,runValidators:true}).then((product)=>{
         return res.status(200).json({product:product});
     }).catch(err => {
         return res.status(500).json("Product not found");
     });
+    
 });
 
 router.route("/product/deleteProduct/:id").delete(requireLogin,admin("user"),async (req,res,next) => {
