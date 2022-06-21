@@ -12,17 +12,22 @@ function requireLogin(req,res,next) {
             return res.status(401).json({error:"you must be logged in to excess this resource"});
         }
         const {_id} = user;
-        User.findById(_id)
-        .then(userdata => {
-            req.user = userdata; 
-            // console.log(req.user); 
-        });
-        // console.log(req.body.user);
-        next();
+       User.findById(_id, function (err, userdata) {
+            if(err){
+                return res.status(500).json("Internal Server Error");
+            }
+            if(!userdata){
+                res.status(401).json({error:"you must be signed up to excess this resource"});
+            }
+            req.user = userdata;
+            next();
+       });
+
     });
 }
 function admin(...role_user){
     return (req,res,next) => {
+        console.log(req.user.role);
         if(role_user.includes(req.user.role)){
             return res.status(403).json({error:"Only admin are allowed to access the resource"});
         }

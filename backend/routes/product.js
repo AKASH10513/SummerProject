@@ -25,7 +25,7 @@ router.route("/product/:id").get(requireLogin,async(req,res,next) => {
 });
 
 
-router.route("/product/newProduct").post(requireLogin,admin("user"),async (req,res,next) => {
+router.post("/product/newProduct",requireLogin,admin("user"),async (req,res,next) => {
     req.body.user = req.user.id;
     await Product.create(req.body, function (err, product) {
         if(err){
@@ -41,13 +41,10 @@ router.route("/product/newProduct").post(requireLogin,admin("user"),async (req,r
 
 router.route("/product/:id").put(requireLogin,admin("user"),async (req,res,next) => {
     const id = req.params.id;
-    await Product.findById(id, function(err,product){
-        if(err){
-            return res.status(500).json("Product not found");
-        }
-        Product.findByIdAndUpdate(id,req.body,{new: true,runValidators:true},function (err){
-            res.status(404).json({error: err});
-        })
+    await Product.findByIdAndUpdate(id,req.body,{new: true,runValidators:true}).then((product)=>{
+        return res.status(200).json({product:product});
+    }).catch(err => {
+        return res.status(500).json("Product not found");
     });
 });
 
