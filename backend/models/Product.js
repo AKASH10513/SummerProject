@@ -14,10 +14,6 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required:true
     },
-    rating: {
-        type : Number,
-        default : 0
-    },
     pics : [
        {
             p_id : {
@@ -34,6 +30,14 @@ const productSchema = new mongoose.Schema({
         type : String,
         required : true
     },
+    likes:{
+        type : Number,
+        default : 0
+    },
+    comments:{
+        type : Number,
+        default : 0
+    },
     stock: {
         type: Number,
         required : true,
@@ -43,26 +47,16 @@ const productSchema = new mongoose.Schema({
         type : Number,
         default: 1
     },
-    reviews : [
-        {
-             type : mongoose.Schema.Types.ObjectId,
-             ref : "User",
-             rating: {
-                type : String,
-                required : true
-             },
-             comment: {
-                type : String,
-                required : true
-             }
-        }
-    ],
+    like:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
+    comment:[{
+        text:String,
+        postedBy:{type:mongoose.Schema.Types.ObjectId,ref:"User"}
+    }],
     user:{
         type : mongoose.Schema.Types.ObjectId,
         ref : "User",
         required : true
     },
-    likes:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
     createdAt: {
         type : Date,
         default: Date.now()

@@ -35,6 +35,15 @@ router.route('/signup').post( async (req,res) =>{
                 },
             })
             user.save().then(result => {
+                transporter.sendMail({
+                    to:user.email,
+                    from:"kumarpramics@gmail.com",
+                    subject:"Signed Up Successfully",
+                    html:`
+                    <p>Thank you for signing up in our Ecommerce site:)</p>
+                    <h5>We're Glad to have you here with us.</h5>
+                    `
+                })
                 res.json({user:result});
             }).
             catch(err => {res.status(500).json("Internal Server Error")});
@@ -126,7 +135,7 @@ router.route('/reset/:token').put(async (req,res) => {
     if(req.body.password !== req.body.confirmPassword){
         return res.status(400).json({error:"Password does not match"});
     }
-    bcrypt.hash(newPassword,12).then(hashedpassword=>{
+    bcrypt.hash(req.body.password,12).then(hashedpassword=>{
         user.password = hashedpassword
         user.resetToken = undefined
         user.expireToken = undefined

@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser')
 const product = require('./routes/product');
 const auth = require('./routes/auth');
+const user = require('./routes/user');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
@@ -20,6 +21,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/',product);
 app.use('/',auth);
+app.use('/',user);
 
 mongoose.connect(process.env.MONGOURL,{useNewUrlParser: true,
     useUnifiedTopology: true,}).then(() => {

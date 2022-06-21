@@ -17,7 +17,7 @@ function requireLogin(req,res,next) {
                 return res.status(500).json("Internal Server Error");
             }
             if(!userdata){
-                res.status(401).json({error:"you must be signed up to excess this resource"});
+                return res.status(401).json({error:"you must be signed up to excess this resource"});
             }
             req.user = userdata;
             next();
